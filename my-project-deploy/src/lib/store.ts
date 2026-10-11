@@ -1,69 +1,25 @@
 import { create } from 'zustand';
-import { persist } from 'zustand/middleware';
 
-export interface DniData {
-  id: string;
-  nombre: string;
-  apellido: string;
-  dniNumero: string;
-  domicilio: string;
-  nacimiento: string;
-  fechaEmision: string;
-  sexo: string;
-  firma: string | null;
-  foto: string | null;
-  userId_value: string;
-  tramiteNumero: string;
-  ejemplar: string;
+export interface DemoProfile {
+  firstName: string;
+  lastName: string;
+  code: string;
+  birthDate: string;
+  address: string;
 }
 
-export interface UserData {
-  id: string;
-  email: string;
-  isActive: boolean;
-  dni: DniData | null;
+export type DemoView = 'generator' | 'home' | 'credential' | 'admin';
+
+interface DemoState {
+  profile: DemoProfile | null;
+  view: DemoView;
+  setProfile: (profile: DemoProfile | null) => void;
+  setView: (view: DemoView) => void;
 }
 
-export type AppView = 'login' | 'register' | 'home' | 'documentos' | 'dni-viewer' | 'admin';
-
-interface AppState {
-  view: AppView;
-  user: UserData | null;
-  isLoading: boolean;
-  error: string | null;
-  _hasHydrated: boolean;
-
-  setView: (view: AppView) => void;
-  setUser: (user: UserData | null) => void;
-  setLoading: (loading: boolean) => void;
-  setError: (error: string | null) => void;
-  logout: () => void;
-  setHasHydrated: (v: boolean) => void;
-}
-
-export const useAppStore = create<AppState>()(
-  persist(
-    (set) => ({
-      view: 'login' as AppView,
-      user: null,
-      isLoading: false,
-      error: null,
-      _hasHydrated: false,
-
-      setView: (view) => set({ view, error: null }),
-      setUser: (user) => set({ user }),
-      setLoading: (isLoading) => set({ isLoading }),
-      setError: (error) => set({ error, isLoading: false }),
-      logout: () => set({ view: 'login', user: null, error: null }),
-      setHasHydrated: (_hasHydrated) => set({ _hasHydrated }),
-    }),
-    {
-      name: 'mi-argentina-session', // localStorage key
-      partialize: (state) => ({ view: state.view, user: state.user }), // only persist view + user
-      onRehydrateStorage: () => (state) => {
-        state?.setHasHydrated(true);
-      },
-    }
-  )
-);
-
+export const useAppStore = create<DemoState>((set) => ({
+  profile: null,
+  view: 'generator',
+  setProfile: (profile) => set({ profile }),
+  setView: (view) => set({ view }),
+}));

@@ -1,5 +1,13 @@
-import { NextResponse } from "next/server";
+﻿import { NextResponse } from 'next/server';
 
-export async function GET() {
-  return NextResponse.json({ message: "Hello, world!" });
-}
+const disabled = () => NextResponse.json(
+  { error: 'API deshabilitada: esta aplicación solo ofrece perfiles ficticios.' },
+  { status: 410, headers: { 'Cache-Control': 'no-store, max-age=0' } },
+);
+
+export const GET = disabled;
+export const POST = disabled;
+export const PUT = disabled;
+export const PATCH = disabled;
+export const DELETE = disabled;
+

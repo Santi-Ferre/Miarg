@@ -1,47 +1,13 @@
-import { db } from '@/lib/db'
-import { NextRequest, NextResponse } from 'next/server'
+﻿import { NextResponse } from 'next/server';
 
-// POST /api/admin/activate - Activate or deactivate a user
-export async function POST(request: NextRequest) {
-  try {
-    const adminKey = request.headers.get('x-admin-key')
+const disabled = () => NextResponse.json(
+  { error: 'API deshabilitada: esta aplicación solo ofrece perfiles ficticios.' },
+  { status: 410, headers: { 'Cache-Control': 'no-store, max-age=0' } },
+);
 
-    if (adminKey !== 'admin123') {
-      return NextResponse.json(
-        { error: 'No autorizado' },
-        { status: 401 }
-      )
-    }
+export const GET = disabled;
+export const POST = disabled;
+export const PUT = disabled;
+export const PATCH = disabled;
+export const DELETE = disabled;
 
-    const { userId, isActive } = await request.json()
-
-    if (!userId || typeof isActive !== 'boolean') {
-      return NextResponse.json(
-        { error: 'userId (string) e isActive (boolean) son requeridos' },
-        { status: 400 }
-      )
-    }
-
-    const user = await db.user.update({
-      where: { id: userId },
-      data: { isActive },
-      include: { dni: true },
-    })
-
-    const { password: _, ...userWithoutPassword } = user
-
-    return NextResponse.json(
-      {
-        message: isActive ? 'Cuenta activada exitosamente' : 'Cuenta desactivada',
-        user: userWithoutPassword,
-      },
-      { status: 200 }
-    )
-  } catch (error) {
-    console.error('Error al activar usuario:', error)
-    return NextResponse.json(
-      { error: 'Error interno del servidor' },
-      { status: 500 }
-    )
-  }
-}

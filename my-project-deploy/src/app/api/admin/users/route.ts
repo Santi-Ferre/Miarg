@@ -1,41 +1,13 @@
-import { db } from '@/lib/db'
-import { NextRequest, NextResponse } from 'next/server'
+﻿import { NextResponse } from 'next/server';
 
-// GET /api/admin/users - List all users with their activation status
-export async function GET(request: NextRequest) {
-  try {
-    const adminKey = request.headers.get('x-admin-key')
+const disabled = () => NextResponse.json(
+  { error: 'API deshabilitada: esta aplicación solo ofrece perfiles ficticios.' },
+  { status: 410, headers: { 'Cache-Control': 'no-store, max-age=0' } },
+);
 
-    if (adminKey !== 'admin123') {
-      return NextResponse.json(
-        { error: 'No autorizado' },
-        { status: 401 }
-      )
-    }
+export const GET = disabled;
+export const POST = disabled;
+export const PUT = disabled;
+export const PATCH = disabled;
+export const DELETE = disabled;
 
-    const users = await db.user.findMany({
-      select: {
-        id: true,
-        email: true,
-        isActive: true,
-        createdAt: true,
-        dni: {
-          select: {
-            nombre: true,
-            apellido: true,
-            dniNumero: true,
-          },
-        },
-      },
-      orderBy: { createdAt: 'desc' },
-    })
-
-    return NextResponse.json({ users }, { status: 200 })
-  } catch (error) {
-    console.error('Error al listar usuarios:', error)
-    return NextResponse.json(
-      { error: 'Error interno del servidor' },
-      { status: 500 }
-    )
-  }
-}
